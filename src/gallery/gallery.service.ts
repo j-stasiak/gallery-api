@@ -25,6 +25,9 @@ export class GalleryService {
   }
 
   update(id: string, updateGalleryDto: UpdateGalleryDto) {
+    this.galleryModel.findByIdAndUpdate(id, updateGalleryDto, { useFindAndModify: false }, (err, res) => {
+      res.save();
+    });
     return `This action updates a #${id} gallery`;
   }
 
