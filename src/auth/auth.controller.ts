@@ -1,5 +1,14 @@
 import { LocalAuthGuard } from './local.auth-guard';
-import { Controller, Post, UseGuards, Request, Body, ValidationPipe, Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Request,
+  Body,
+  ValidationPipe,
+  Query,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
@@ -10,12 +19,20 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  login(@Request() req) {
-    return this.authService.login(req.user);
+  async login(@Body() credentials: { email: string, password: string }) {
+    const user = await this.authService.authenticate(credentials.email, credentials.password);
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return this.authService.login(user);
   }
 
   @Post('register')
-  async register(@Body(new ValidationPipe({ transform: true })) credentials: RegisterDto) {
+  async register(
+    @Body(new ValidationPipe({ transform: true })) credentials: RegisterDto,
+  ) {
     credentials.password = await bcrypt.hash(credentials.password, 20);
     this.authService.registerUser(credentials);
   }

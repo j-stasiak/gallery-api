@@ -11,8 +11,9 @@ export class GalleryService {
     @InjectModel(Gallery.name)
     private readonly galleryModel: Model<GalleryDocument>,) { }
 
-  create(createGalleryDto: CreateGalleryDto) {
-    return 'This action adds a new gallery';
+  async create(createGalleryDto: CreateGalleryDto): Promise<Gallery> {
+    const gallery = new this.galleryModel(createGalleryDto);
+    return gallery.save();
   }
 
   findAll() {
@@ -20,7 +21,7 @@ export class GalleryService {
   }
 
   findOne(id: string) {
-    return `This action returns a #${id} gallery`;
+    return this.galleryModel.findById(id);
   }
 
   update(id: string, updateGalleryDto: UpdateGalleryDto) {

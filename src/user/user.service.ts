@@ -30,12 +30,14 @@ export class UserService {
   }
 
   async findOne(email: string): Promise<UserDocument> {
-    return this.userModel.findOne(user => user.email == email);
+    return this.userModel.findOne({ email: email });
   }
 
   async updateVerificationStatus(hex: string): Promise<void> {
-    const user = await this.userModel.findOne(user => user.verificationHex == hex);
-    await this.userModel.findOneAndUpdate({ '_id': user.id }, { 'verified': true });
+    const user = await this.userModel.findOne({ verificationHex: hex });
+    user.verified = true;
+
+    user.save();
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

@@ -21,14 +21,18 @@ export class Gallery {
   private: boolean;
 
   @Prop({
-    ref: Photo.name,
-    type: [mongooseSchema.Types.ObjectId],
+    type: [{
+      ref: Photo.name,
+      type: [mongooseSchema.Types.ObjectId],
+    }]
   })
   photos: Photo[];
 
   @Prop({
-    ref: Comment.name,
-    type: [mongooseSchema.Types.ObjectId],
+    type: [{
+      ref: Comment.name,
+      type: mongooseSchema.Types.ObjectId,
+    }]
   })
   comments: Comment[];
 

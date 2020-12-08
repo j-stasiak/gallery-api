@@ -18,6 +18,9 @@ export class User {
   @Prop()
   verificationHex: string;
 
+  @Prop({ type: Date })
+  lastLogin?: Date;
+
   @Prop({ type: Object })
   additionalInfo?: {
     firstName?: string;

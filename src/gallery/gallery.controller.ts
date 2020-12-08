@@ -1,14 +1,17 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Req, UseGuards } from '@nestjs/common';
 import { GalleryService } from './gallery.service';
 import { CreateGalleryDto } from './dto/create-gallery.dto';
 import { UpdateGalleryDto } from './dto/update-gallery.dto';
+import { JwtAuthGuard } from 'src/auth/jwt.auth-guard';
 
 @Controller('gallery')
 export class GalleryController {
   constructor(private readonly galleryService: GalleryService) { }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createGalleryDto: CreateGalleryDto) {
+  create(@Body() createGalleryDto: CreateGalleryDto, @Req() request) {
+    console.log(request.user);
     return this.galleryService.create(createGalleryDto);
   }
 
@@ -17,8 +20,10 @@ export class GalleryController {
     return this.galleryService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string, @Req() request) {
+    console.log(request.user);
     return this.galleryService.findOne(id);
   }
 
