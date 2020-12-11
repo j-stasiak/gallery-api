@@ -30,8 +30,8 @@ export class AuthService {
     };
   }
 
-  registerUser(credentials: RegisterDto) {
-    this.userService.create(credentials);
+  registerUser(credentials: RegisterDto): Promise<Omit<UserDocument, 'password'>> {
+    return this.userService.create(credentials);
   }
 
   verifyUser(hex: string) {
