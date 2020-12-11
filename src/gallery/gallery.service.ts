@@ -37,7 +37,7 @@ export class GalleryService {
     const document = await this.galleryModel.findById(id);
 
     if (!document) {
-      throw new NotFoundException();
+      throw new NotFoundException('GalleryNotFound');
     }
 
     return document;
