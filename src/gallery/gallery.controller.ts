@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
 import { GalleryService } from './gallery.service';
 import { CreateGalleryDto } from './dto/create-gallery.dto';
 import { UpdateGalleryDto } from './dto/update-gallery.dto';
@@ -12,11 +12,11 @@ export class GalleryController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createGalleryDto: CreateGalleryDto, @Req() request) {
-    console.log(request.user);
-    return this.galleryService.create(createGalleryDto);
+  async create(@Body() createGalleryDto: CreateGalleryDto) {
+    return await this.galleryService.create(createGalleryDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.galleryService.findAll();
@@ -24,16 +24,17 @@ export class GalleryController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string, @Req() request) {
-    console.log(request.user);
-    return this.galleryService.findOne(id);
+  findOne(@Param('id') id: string) {
+    return this.galleryService.getById(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   update(@Param('id') id: string, @Body() updateGalleryDto: UpdateGalleryDto) {
     return this.galleryService.update(id, updateGalleryDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.galleryService.remove(id);

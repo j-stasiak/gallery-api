@@ -1,5 +1,5 @@
 import { Gallery, GalleryDocument } from './schemas/gallery.schema';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { CreateGalleryDto } from './dto/create-gallery.dto';
 import { UpdateGalleryDto } from './dto/update-gallery.dto';
@@ -24,14 +24,22 @@ export class GalleryService {
     return this.galleryModel.findById(id);
   }
 
-  update(id: string, updateGalleryDto: UpdateGalleryDto) {
-    this.galleryModel.findByIdAndUpdate(id, updateGalleryDto, { useFindAndModify: false }, (err, res) => {
-      res.save();
-    });
-    return `This action updates a #${id} gallery`;
+  async update(id: string, updateGalleryDto: UpdateGalleryDto) {
+    const document = await this.galleryModel.findByIdAndUpdate(id, updateGalleryDto, { useFindAndModify: false, new: true });
+    return document;
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} gallery`;
+  async remove(id: string) {
+    await this.galleryModel.remove(await this.getById(id));
+  }
+
+  async getById(id: string): Promise<GalleryDocument> {
+    const document = await this.galleryModel.findById(id);
+
+    if (!document) {
+      throw new NotFoundException();
+    }
+
+    return document;
   }
 }
