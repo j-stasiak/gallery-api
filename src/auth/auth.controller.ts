@@ -8,6 +8,7 @@ import {
   ValidationPipe,
   Query,
   UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
@@ -19,16 +20,15 @@ import { ApiTags } from '@nestjs/swagger';
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
-  @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Body() credentials: { email: string, password: string }) {
     const user = await this.authService.authenticate(credentials.email, credentials.password);
 
     if (!user) {
-      throw new UnauthorizedException();
+      throw new NotFoundException('UserNotFound', 'User with given credentials was not found!');
     }
 
-    return this.authService.login(user);
+    return await this.authService.login(user);
   }
 
   @Post('register')
@@ -36,11 +36,11 @@ export class AuthController {
     @Body(new ValidationPipe({ transform: true })) credentials: RegisterDto,
   ) {
     credentials.password = await bcrypt.hash(credentials.password, 20);
-    this.authService.registerUser(credentials);
+    await this.authService.registerUser(credentials);
   }
 
   @Post('verify')
   async verifyUser(@Query('hex') hex: string) {
-    const user = this.authService.verifyUser(hex);
+    this.authService.verifyUser(hex);
   }
 }
